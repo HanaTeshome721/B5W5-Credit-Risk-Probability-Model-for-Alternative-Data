@@ -1,23 +1,10 @@
-# Use official Python image
-FROM python:3.10-slim-bullseye
+FROM python:3.12
 
-# Set environment vars
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Set work directory
 WORKDIR /app
 
-# Copy files
-COPY . /app/
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install dependencies and update system packages to reduce vulnerabilities
-RUN apt-get update && apt-get upgrade -y && apt-get clean && \
-    pip install --upgrade pip && \
-    pip install -r requirements.txt
+COPY . .
 
-# Expose port
-EXPOSE 8000
-
-# Run API
 CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
