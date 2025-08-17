@@ -3,6 +3,8 @@ name: CI Pipeline
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
@@ -22,11 +24,35 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Flake8
+    - name: Run Linter (Flake8)
       run: |
         pip install flake8
         flake8 src tests --max-line-length=100
 
-    - name: Run Tests
+    - name: Run Tests (Pytest)
       run: |
-        pytest tests/
+        pytest tests/ --disable-warnings -q
+
+    - name: Run Type Checking (mypy)
+      run: |
+        pip install mypy
+        mypy src
+
+    - name: Run Security Scan (bandit)
+      run: |
+        pip install bandit
+        bandit -r src
+
+    - name: Upload Test Coverage
+      run: |
+        pip install coverage
+        coverage run -m pytest tests/
+        coverage xml
+      continue-on-error: true
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        fail_ci_if_error: true
