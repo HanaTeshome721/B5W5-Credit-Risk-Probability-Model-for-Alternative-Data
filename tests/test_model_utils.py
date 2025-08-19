@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import numpy as np
-from src.model_utils import evaluate_model
+# from src.model_utils import evaluate_model
 
 def test_evaluate_model_outputs():
     y_true = [0, 1, 1, 0, 1]
